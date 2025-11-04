@@ -13,6 +13,7 @@ import AccessPage from "./pages/AccessPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import DashboardHomePage from "./pages/dashboard/DashboardHomePage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
+import LinkedInSalesNavScraperPage from "./pages/dashboard/LinkedInSalesNavScraperPage";
 import BuyCreditsPage from "./pages/dashboard/BuyCreditsPage";
 import ComingSoonPage from "./pages/dashboard/ComingSoonPage";
 import NotFound from "./pages/NotFound";
@@ -144,7 +145,7 @@ const App = () => (
               element={
                 <DomainRedirect type="app">
                   <ProtectedRoute>
-                    <ComingSoonPage title="LinkedIn Sales Nav Scraper" />
+                    <LinkedInSalesNavScraperPage />
                   </ProtectedRoute>
                 </DomainRedirect>
               } 

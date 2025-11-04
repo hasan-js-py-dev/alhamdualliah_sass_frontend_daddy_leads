@@ -121,7 +121,7 @@ export default function LinkedInSalesNavScraperPage() {
                   .map((exp) => (
                     <TableRow key={exp.id}>
                       <TableCell>
-                        <Badge variant="outline" className={getStatusColor(exp.status)}>
+                        <Badge className={getStatusColor(exp.status)}>
                           {exp.status}
                         </Badge>
                       </TableCell>

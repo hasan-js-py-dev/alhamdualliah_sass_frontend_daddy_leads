@@ -275,8 +275,13 @@ All colors MUST be HSL.
   }
 
   html {
-    scroll-behavior: smooth;
     overflow-x: hidden;
+  }
+  
+  /* Smooth scroll with hardware acceleration */
+  html, body {
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {

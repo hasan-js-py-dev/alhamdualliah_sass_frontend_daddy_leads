@@ -1,11 +1,13 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface TrustedBySectionProps {
   activeIndex: number;
 }
 
 const TrustedBySection = ({ activeIndex }: TrustedBySectionProps) => {
+  const shouldReduceMotion = useReducedMotion();
+  
   const logos = [
     { name: 'Clay', url: 'https://clay.earth' },
     { name: 'ContactOut', url: 'https://contactout.com' },
@@ -60,10 +62,11 @@ const TrustedBySection = ({ activeIndex }: TrustedBySectionProps) => {
                     duration: 0.6,
                     ease: [0.4, 0.0, 0.2, 1]
                   }}
-                  className={`inline-flex items-center justify-center px-5 py-2 rounded-lg whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r ${gradient} animate-rainbow`}
+                  className={`inline-flex items-center justify-center px-5 py-2 rounded-lg whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r ${gradient} ${!shouldReduceMotion ? 'animate-rainbow' : ''}`}
                   style={{
                     transition: 'all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)',
-                    willChange: 'transform, opacity, background-position',
+                    willChange: shouldReduceMotion ? 'transform, opacity' : 'transform, opacity, background-position',
+                    transform: 'translate3d(0, 0, 0)',
                   }}
                 >
                   <span className="text-lg font-bold tracking-tight">

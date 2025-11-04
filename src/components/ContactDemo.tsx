@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useReducedMotion } from 'framer-motion';
 import { Copy } from 'lucide-react';
 import { contacts } from '../data/mockContacts';
 
@@ -7,7 +7,9 @@ const ContactDemo = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [stage, setStage] = useState<'locked' | 'unlocking' | 'revealed'>('locked');
   const [progress, setProgress] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useTransform(y, [-10, 10], [5, -5]);
@@ -42,12 +44,23 @@ const ContactDemo = () => {
   }, [currentIndex]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isHovering || shouldReduceMotion) return;
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
     const offsetX = e.clientX - (rect.left + rect.width / 2);
     const offsetY = e.clientY - (rect.top + rect.height / 2);
     x.set(offsetX / 20);
     y.set(offsetY / 20);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    x.set(0);
+    y.set(0);
   };
 
   const upcomingContacts = contacts
@@ -59,7 +72,12 @@ const ContactDemo = () => {
       <motion.div
         ref={cardRef}
         onMouseMove={handleMouseMove}
-        style={{ rotateX, rotateY }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{ 
+          rotateX: shouldReduceMotion ? 0 : rotateX, 
+          rotateY: shouldReduceMotion ? 0 : rotateY,
+        }}
         className="relative overflow-visible"
       >
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-[60]">
@@ -84,8 +102,9 @@ const ContactDemo = () => {
           className="relative bg-white/5 backdrop-blur-xl rounded-2xl ring-1 ring-white/10 overflow-hidden pt-12 pb-6 px-6 space-y-4"
           style={{
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
-            transform: 'perspective(1000px) rotateY(0deg)',
+            transform: 'translate3d(0, 0, 0)',
             transformStyle: 'preserve-3d',
+            willChange: 'transform',
           }}
         >
           <div

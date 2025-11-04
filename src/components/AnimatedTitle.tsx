@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface AnimatedTitleProps {
   text: string;
@@ -7,6 +7,8 @@ interface AnimatedTitleProps {
 }
 
 const AnimatedTitle = ({ text, className = '' }: AnimatedTitleProps) => {
+  const shouldReduceMotion = useReducedMotion();
+  
   const gradients = [
     'from-[#14F195] via-[#00D4FF] to-[#9945FF]',
     'from-[#FF6B9D] via-[#FFA500] to-[#FFD700]',
@@ -17,15 +19,17 @@ const AnimatedTitle = ({ text, className = '' }: AnimatedTitleProps) => {
   const [currentGradient, setCurrentGradient] = useState(0);
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
+    
     const interval = setInterval(() => {
       setCurrentGradient((prev) => (prev + 1) % gradients.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [gradients.length]);
+  }, [gradients.length, shouldReduceMotion]);
 
   return (
     <motion.span
-      animate={{
+      animate={shouldReduceMotion ? {} : {
         rotate: [0, -0.3, 0.3, -0.3, 0],
         y: [0, -1, 0, -1, 0],
       }}
@@ -38,9 +42,10 @@ const AnimatedTitle = ({ text, className = '' }: AnimatedTitleProps) => {
       className={`inline-block bg-gradient-to-r ${gradients[currentGradient]} bg-clip-text text-transparent ${className}`}
       style={{
         backgroundSize: '200% 200%',
-        animation: 'gradient-shift 4s ease-in-out infinite',
+        animation: shouldReduceMotion ? 'none' : 'gradient-shift 4s ease-in-out infinite',
         transition: 'all 1.5s cubic-bezier(0.4, 0.0, 0.2, 1)',
-        willChange: 'transform, background-position',
+        willChange: shouldReduceMotion ? 'auto' : 'transform, background-position',
+        transform: 'translate3d(0, 0, 0)',
       }}
     >
       {text}

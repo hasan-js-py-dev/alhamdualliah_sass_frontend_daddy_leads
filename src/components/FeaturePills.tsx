@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 
 interface Feature {
@@ -13,6 +13,8 @@ interface FeaturePillsProps {
 }
 
 const FeaturePills = ({ features, activeIndex }: FeaturePillsProps) => {
+  const shouldReduceMotion = useReducedMotion();
+  
   const pillGradients = [
     'from-[#14F195] via-[#00D4FF] to-[#0EA5E9]',
     'from-[#FF6B9D] via-[#FFA500] to-[#FBBF24]',
@@ -45,15 +47,22 @@ const FeaturePills = ({ features, activeIndex }: FeaturePillsProps) => {
               style={{
                 transition: 'all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)',
                 willChange: 'transform, opacity',
+                transform: 'translate3d(0, 0, 0)',
               }}
             >
               <Icon 
-                className={`w-5 h-5 bg-gradient-to-r ${gradient} bg-clip-text text-transparent animate-rainbow`}
-                style={{ willChange: 'background-position' }}
+                className={`w-5 h-5 bg-gradient-to-r ${gradient} bg-clip-text text-transparent ${!shouldReduceMotion ? 'animate-rainbow' : ''}`}
+                style={{ 
+                  willChange: shouldReduceMotion ? 'auto' : 'background-position',
+                  transform: 'translate3d(0, 0, 0)',
+                }}
               />
               <span 
-                className={`text-[20px] font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent animate-rainbow`}
-                style={{ willChange: 'background-position' }}
+                className={`text-[20px] font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent ${!shouldReduceMotion ? 'animate-rainbow' : ''}`}
+                style={{ 
+                  willChange: shouldReduceMotion ? 'auto' : 'background-position',
+                  transform: 'translate3d(0, 0, 0)',
+                }}
               >
                 {feature.text}
               </span>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import HeroTextSection from './HeroTextSection';
 import ContactDemo from './ContactDemo';
 import AnimatedLines from './AnimatedLines';
@@ -7,12 +7,20 @@ import AnimatedBackground from './AnimatedBackground';
 import { SIGNUP_URL } from '@/config/domains';
 
 const HeroSection = () => {
+  const shouldReduceMotion = useReducedMotion();
+  
   const handleCTAClick = () => {
     window.location.href = SIGNUP_URL;
   };
 
   return (
-    <section className="relative pt-32 pb-16 px-6 md:px-12 min-h-[85vh] flex items-center">
+    <section 
+      className="relative pt-32 pb-16 px-6 md:px-12 min-h-[85vh] flex items-center"
+      style={{
+        contain: 'layout style',
+        willChange: 'scroll-position',
+      }}
+    >
       <div className="max-w-7xl mx-auto w-full">
         <AnimatedBackground />
         <AnimatedLines />
@@ -25,7 +33,14 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ 
+              duration: shouldReduceMotion ? 0.01 : 0.8, 
+              delay: shouldReduceMotion ? 0 : 0.4 
+            }}
+            style={{
+              willChange: 'transform, opacity',
+              transform: 'translate3d(0, 0, 0)',
+            }}
           >
             <ContactDemo />
           </motion.div>

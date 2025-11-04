@@ -276,10 +276,38 @@ All colors MUST be HSL.
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+  
+  /* Optimize animations for smooth performance */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Enable GPU acceleration for animated elements */
+  [class*="animate-"],
+  [class*="motion-"] {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  /* Respect user's preference for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -291,31 +319,40 @@ All colors MUST be HSL.
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient-shift 5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  will-change: background-position;
+  transform: translate3d(0, 0, 0);
 }
 
 .animate-rainbow {
   background-size: 300% 300%;
   animation: rainbow-shift 8s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  will-change: background-position;
+  transform: translate3d(0, 0, 0);
 }
 
 .animate-shake {
   animation: tilt-bounce 6s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  will-change: transform;
 }
 
 .animate-button-shake {
   animation: shake 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-icon-float {
   animation: icon-float 4s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
+  will-change: box-shadow;
 }
 
 .animate-badge-bounce {
   animation: badge-bounce 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 .shimmer {
@@ -355,6 +392,7 @@ All colors MUST be HSL.
   background-color: #000000;
   position: relative;
   overflow: hidden;
+  will-change: scroll-position;
 }
 
 .hero-gradient::before {
@@ -369,4 +407,6 @@ All colors MUST be HSL.
   animation: hero-drift 60s linear infinite;
   opacity: 0.03;
   pointer-events: none;
+  will-change: background-position;
+  transform: translate3d(0, 0, 0);
 }

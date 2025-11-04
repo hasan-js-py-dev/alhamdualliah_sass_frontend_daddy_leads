@@ -20,13 +20,31 @@ const AnimatedStars = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // Handle high-DPI screens and avoid expensive layout thrashing on resize
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const setCanvasSize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    // Debounced resize handler
+    let resizeTimeout: number | undefined;
+    const resizeCanvas = () => {
+      window.clearTimeout(resizeTimeout as any);
+      resizeTimeout = window.setTimeout(() => {
+        setCanvasSize();
+        // recreate stars to match new dimensions
+        starsRef.current = createStars(Math.min(120, Math.floor((canvas.width / dpr) * (canvas.height / dpr) / 5000)));
+      }, 150);
+    };
+
+    setCanvasSize();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
 
     // Create stars
     const createStars = (count: number) => {
@@ -43,7 +61,8 @@ const AnimatedStars = () => {
       return stars;
     };
 
-    starsRef.current = createStars(150);
+  // Reduce star count to improve performance on lower-end devices
+  starsRef.current = createStars(90);
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -93,8 +112,19 @@ const AnimatedStars = () => {
 
     animate();
 
+    // Pause when tab is hidden to reduce CPU work
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      } else {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility, { passive: true });
+
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }

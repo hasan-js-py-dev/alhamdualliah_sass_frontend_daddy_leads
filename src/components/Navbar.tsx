@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
@@ -15,6 +15,9 @@ const Navbar = () => {
   // Check if we're on app subdomain pages (access or dashboard)
   const isAppDomain = location.pathname.startsWith('/access') || location.pathname.startsWith('/dashboard');
 
+  // Ref used to throttle scroll callbacks with requestAnimationFrame
+  const scrollTickRef = useRef(false);
+
   const logoGradients = [
     'from-[#6713e1] via-[#8b5cf6] to-[#a78bfa]',
     'from-[#FF6B35] via-[#FF8C42] to-[#FFA07A]',
@@ -24,12 +27,21 @@ const Navbar = () => {
   ];
 
   useEffect(() => {
+  // Throttle scroll updates using requestAnimationFrame to avoid flooding React renders
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      const shouldBeScrolled = window.scrollY > 100;
+      if (scrollTickRef.current) return;
+      scrollTickRef.current = true;
+      requestAnimationFrame(() => {
+        setIsScrolled(shouldBeScrolled);
+        scrollTickRef.current = false;
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Use passive listener for better scrolling performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll, { passive: true } as EventListenerOptions);
   }, []);
 
   useEffect(() => {

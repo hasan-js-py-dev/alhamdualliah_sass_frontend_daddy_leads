@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Minimize2, Play, Cookie } from "lucide-react";
+import { Minimize2, Play, Cookie, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { scraperService } from "@/services/scraperService";
 
 interface NewExportDialogProps {
   open: boolean;
@@ -17,20 +18,40 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
   const [listName, setListName] = useState("");
   const [cookie, setCookie] = useState("");
   const [isCookieFetched, setIsCookieFetched] = useState(false);
+  const [isFetchingCookie, setIsFetchingCookie] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
 
-  const handleFetchCookie = () => {
-    // TODO: Implement actual cookie fetching logic
-    const mockCookie = "li_at=AQEDATxxxxxxxx; JSESSIONID=ajax:xxxxxxxx";
-    setCookie(mockCookie);
-    setIsCookieFetched(true);
-    
-    toast({
-      title: "Cookie fetched",
-      description: "LinkedIn cookie retrieved successfully",
-    });
+  const handleFetchCookie = async () => {
+    setIsFetchingCookie(true);
+    try {
+      const result = await scraperService.getCookie();
+
+      if (result.success && result.data?.cookie) {
+        setCookie(result.data.cookie);
+        setIsCookieFetched(true);
+        toast({
+          title: "Cookie fetched",
+          description: "LinkedIn cookie retrieved successfully",
+        });
+      } else {
+        toast({
+          title: "No cookie found",
+          description: "Please save a cookie first using the LinkedIn Cookie button",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch cookie. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsFetchingCookie(false);
+    }
   };
 
-  const handleRunScraper = () => {
+  const handleRunScraper = async () => {
     if (!url || !listName) {
       toast({
         title: "Missing fields",
@@ -49,18 +70,38 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
       return;
     }
 
-    // TODO: Implement scraper logic
-    toast({
-      title: "Scraper started",
-      description: `Starting export for "${listName}"`,
-    });
+    setIsRunning(true);
+    try {
+      const result = await scraperService.startScraper(url, listName);
 
-    // Reset form and close
-    setUrl("");
-    setListName("");
-    setCookie("");
-    setIsCookieFetched(false);
-    onOpenChange(false);
+      if (result.success) {
+        toast({
+          title: "Scraper started",
+          description: `Starting export for "${listName}"`,
+        });
+
+        // Reset form and close
+        setUrl("");
+        setListName("");
+        setCookie("");
+        setIsCookieFetched(false);
+        onOpenChange(false);
+      } else {
+        toast({
+          title: "Failed to start scraper",
+          description: result.message || "An error occurred",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start scraper. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRunning(false);
+    }
   };
 
   return (
@@ -116,11 +157,21 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
 
           <Button
             onClick={handleFetchCookie}
-            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
+            disabled={isFetchingCookie}
+            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0 disabled:opacity-50"
             size="lg"
           >
-            <Cookie className="h-5 w-5" />
-            Fetch Cookie
+            {isFetchingCookie ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Fetching...
+              </>
+            ) : (
+              <>
+                <Cookie className="h-5 w-5" />
+                Fetch Cookie
+              </>
+            )}
           </Button>
 
           {isCookieFetched && (
@@ -140,12 +191,21 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
 
           <Button
             onClick={handleRunScraper}
-            disabled={!isCookieFetched}
+            disabled={!isCookieFetched || isRunning}
             className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
-            <Play className="h-5 w-5" />
-            Run Scraper
+            {isRunning ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Starting...
+              </>
+            ) : (
+              <>
+                <Play className="h-5 w-5" />
+                Run Scraper
+              </>
+            )}
           </Button>
         </div>
       </DialogContent>

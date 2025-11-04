@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Minimize2, Save } from "lucide-react";
+import { Minimize2, Save, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { scraperService } from "@/services/scraperService";
 
 interface LinkedInCookieDialogProps {
   open: boolean;
@@ -14,8 +15,9 @@ interface LinkedInCookieDialogProps {
 
 export function LinkedInCookieDialog({ open, onOpenChange, onMinimize }: LinkedInCookieDialogProps) {
   const [cookie, setCookie] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveCookie = () => {
+  const handleSaveCookie = async () => {
     if (!cookie.trim()) {
       toast({
         title: "Cookie is required",
@@ -25,14 +27,33 @@ export function LinkedInCookieDialog({ open, onOpenChange, onMinimize }: LinkedI
       return;
     }
 
-    // TODO: Implement cookie save logic
-    toast({
-      title: "Cookie saved",
-      description: "LinkedIn cookie has been saved successfully",
-    });
+    setIsSaving(true);
+    try {
+      const result = await scraperService.saveCookie(cookie);
 
-    setCookie("");
-    onOpenChange(false);
+      if (result.success) {
+        toast({
+          title: "Cookie saved",
+          description: "LinkedIn cookie has been saved successfully",
+        });
+        setCookie("");
+        onOpenChange(false);
+      } else {
+        toast({
+          title: "Failed to save cookie",
+          description: result.message || "An error occurred",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save cookie. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -78,11 +99,21 @@ export function LinkedInCookieDialog({ open, onOpenChange, onMinimize }: LinkedI
 
           <Button
             onClick={handleSaveCookie}
-            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
+            disabled={isSaving}
+            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0 disabled:opacity-50"
             size="lg"
           >
-            <Save className="h-5 w-5" />
-            Save Cookie
+            {isSaving ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-5 w-5" />
+                Save Cookie
+              </>
+            )}
           </Button>
         </div>
       </DialogContent>

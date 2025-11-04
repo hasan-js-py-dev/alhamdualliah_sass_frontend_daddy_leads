@@ -8,7 +8,9 @@ const ContactDemo = () => {
   const [stage, setStage] = useState<'locked' | 'unlocking' | 'revealed'>('locked');
   const [progress, setProgress] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
   const shouldReduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -16,6 +18,31 @@ const ContactDemo = () => {
   const rotateY = useTransform(x, [-10, 10], [-5, 5]);
 
   const currentContact = contacts[currentIndex];
+
+  // Detect scroll to disable 3D effects
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(true);
+      x.set(0);
+      y.set(0);
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [x, y]);
 
   useEffect(() => {
     const cycle = async () => {
@@ -44,7 +71,7 @@ const ContactDemo = () => {
   }, [currentIndex]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (shouldReduceMotion || !isHovering) return;
+    if (shouldReduceMotion || !isHovering || isScrolling) return;
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
     const offsetX = e.clientX - (rect.left + rect.width / 2);
@@ -75,8 +102,8 @@ const ContactDemo = () => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{ 
-          rotateX: shouldReduceMotion ? 0 : rotateX, 
-          rotateY: shouldReduceMotion ? 0 : rotateY,
+          rotateX: shouldReduceMotion || isScrolling ? 0 : rotateX, 
+          rotateY: shouldReduceMotion || isScrolling ? 0 : rotateY,
         }}
         className="relative overflow-visible"
       >

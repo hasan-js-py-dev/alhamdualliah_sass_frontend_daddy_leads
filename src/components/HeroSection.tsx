@@ -33,11 +33,11 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ 
-              duration: shouldReduceMotion ? 0.01 : 0.8, 
-              delay: shouldReduceMotion ? 0 : 0.4 
+              duration: shouldReduceMotion ? 0.01 : 0.6, 
+              delay: shouldReduceMotion ? 0 : 0.3,
+              ease: [0.25, 0.1, 0.25, 1]
             }}
             style={{
-              willChange: 'transform, opacity',
               transform: 'translate3d(0, 0, 0)',
             }}
           >

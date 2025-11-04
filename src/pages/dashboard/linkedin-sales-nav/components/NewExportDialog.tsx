@@ -15,12 +15,35 @@ interface NewExportDialogProps {
 export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDialogProps) {
   const [url, setUrl] = useState("");
   const [listName, setListName] = useState("");
+  const [cookie, setCookie] = useState("");
+  const [isCookieFetched, setIsCookieFetched] = useState(false);
+
+  const handleFetchCookie = () => {
+    // TODO: Implement actual cookie fetching logic
+    const mockCookie = "li_at=AQEDATxxxxxxxx; JSESSIONID=ajax:xxxxxxxx";
+    setCookie(mockCookie);
+    setIsCookieFetched(true);
+    
+    toast({
+      title: "Cookie fetched",
+      description: "LinkedIn cookie retrieved successfully",
+    });
+  };
 
   const handleRunScraper = () => {
     if (!url || !listName) {
       toast({
         title: "Missing fields",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isCookieFetched) {
+      toast({
+        title: "Cookie required",
+        description: "Please fetch the cookie before running the scraper",
         variant: "destructive",
       });
       return;
@@ -35,6 +58,8 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
     // Reset form and close
     setUrl("");
     setListName("");
+    setCookie("");
+    setIsCookieFetched(false);
     onOpenChange(false);
   };
 
@@ -90,12 +115,7 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
           </div>
 
           <Button
-            onClick={() => {
-              toast({
-                title: "Fetching cookie",
-                description: "Retrieving LinkedIn cookie...",
-              });
-            }}
+            onClick={handleFetchCookie}
             className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
             size="lg"
           >
@@ -103,9 +123,25 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
             Fetch Cookie
           </Button>
 
+          {isCookieFetched && (
+            <div className="space-y-2">
+              <Label htmlFor="cookie" className="text-base">
+                Fetched Cookie
+              </Label>
+              <Input
+                id="cookie"
+                value={cookie}
+                onChange={(e) => setCookie(e.target.value)}
+                className="h-11 font-mono text-sm"
+                readOnly
+              />
+            </div>
+          )}
+
           <Button
             onClick={handleRunScraper}
-            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
+            disabled={!isCookieFetched}
+            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
             <Play className="h-5 w-5" />

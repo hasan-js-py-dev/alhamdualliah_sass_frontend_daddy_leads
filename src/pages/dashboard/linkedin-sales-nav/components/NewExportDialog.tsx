@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Minimize2, Play } from "lucide-react";
+import { Minimize2, Play, Cookie } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface NewExportDialogProps {
@@ -88,6 +88,20 @@ export function NewExportDialog({ open, onOpenChange, onMinimize }: NewExportDia
               className="h-11"
             />
           </div>
+
+          <Button
+            onClick={() => {
+              toast({
+                title: "Fetching cookie",
+                description: "Retrieving LinkedIn cookie...",
+              });
+            }}
+            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
+            size="lg"
+          >
+            <Cookie className="h-5 w-5" />
+            Fetch Cookie
+          </Button>
 
           <Button
             onClick={handleRunScraper}

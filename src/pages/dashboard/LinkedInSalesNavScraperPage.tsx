@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { DashboardLayout } from "./components/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Plus, Cookie } from "lucide-react";
+import { Plus, Cookie } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -40,7 +39,6 @@ const mockExports: Export[] = [
 ];
 
 export default function LinkedInSalesNavScraperPage() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [exports] = useState<Export[]>(mockExports);
 
   const getStatusColor = (status: Export["status"]) => {
@@ -62,34 +60,25 @@ export default function LinkedInSalesNavScraperPage() {
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-2xl">⚡</span>
+        <div className="flex items-center justify-between p-6 bg-muted/30 rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-2xl">⚡</span>
+            </div>
+            <h1 className="text-3xl font-bold">Sales Navigator Export</h1>
           </div>
-          <h1 className="text-3xl font-bold">Sales Navigator Export</h1>
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
-            <Cookie className="h-4 w-4" />
-            LinkedIn Cookie
-          </Button>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Export
-          </Button>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button className="gap-2 bg-[#FFDBCC] text-black hover:bg-[#FFDBCC]/90">
+              <Cookie className="h-4 w-4" />
+              LinkedIn Cookie
+            </Button>
+            <Button className="gap-2 bg-[#FFDBCC] text-black hover:bg-[#FFDBCC]/90">
+              <Plus className="h-4 w-4" />
+              New Export
+            </Button>
+          </div>
         </div>
 
         {/* Table */}
@@ -114,11 +103,7 @@ export default function LinkedInSalesNavScraperPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                exports
-                  .filter((exp) =>
-                    exp.name.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                  .map((exp) => (
+                exports.map((exp) => (
                     <TableRow key={exp.id}>
                       <TableCell>
                         <Badge className={getStatusColor(exp.status)}>

@@ -3,20 +3,22 @@ import { Helmet } from "react-helmet-async";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { PageHeader } from "./components/PageHeader";
 import { ExportsTable } from "./components/ExportsTable";
+import { NewExportDialog } from "./components/NewExportDialog";
+import { LinkedInCookieDialog } from "./components/LinkedInCookieDialog";
 import { Export } from "./types";
 import { mockExports } from "./data/mockExports";
 
 export default function LinkedInSalesNavPage() {
   const [exports] = useState<Export[]>(mockExports);
+  const [newExportOpen, setNewExportOpen] = useState(false);
+  const [cookieDialogOpen, setCookieDialogOpen] = useState(false);
 
   const handleLinkedInCookieClick = () => {
-    // TODO: Implement LinkedIn cookie dialog
-    console.log("LinkedIn Cookie clicked");
+    setCookieDialogOpen(true);
   };
 
   const handleNewExportClick = () => {
-    // TODO: Implement new export dialog
-    console.log("New Export clicked");
+    setNewExportOpen(true);
   };
 
   return (
@@ -33,6 +35,16 @@ export default function LinkedInSalesNavPage() {
         />
         <ExportsTable exports={exports} />
       </div>
+
+      <NewExportDialog 
+        open={newExportOpen}
+        onOpenChange={setNewExportOpen}
+      />
+
+      <LinkedInCookieDialog
+        open={cookieDialogOpen}
+        onOpenChange={setCookieDialogOpen}
+      />
     </DashboardLayout>
   );
 }

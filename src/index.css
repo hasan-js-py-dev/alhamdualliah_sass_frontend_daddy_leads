@@ -392,7 +392,6 @@ All colors MUST be HSL.
   background-color: #000000;
   position: relative;
   overflow: hidden;
-  will-change: scroll-position;
 }
 
 .hero-gradient::before {

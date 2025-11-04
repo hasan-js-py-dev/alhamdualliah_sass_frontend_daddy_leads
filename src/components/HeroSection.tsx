@@ -18,7 +18,6 @@ const HeroSection = () => {
       className="relative pt-32 pb-16 px-6 md:px-12 min-h-[85vh] flex items-center"
       style={{
         contain: 'layout style',
-        willChange: 'scroll-position',
       }}
     >
       <div className="max-w-7xl mx-auto w-full">

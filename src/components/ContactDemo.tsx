@@ -44,7 +44,7 @@ const ContactDemo = () => {
   }, [currentIndex]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isHovering || shouldReduceMotion) return;
+    if (shouldReduceMotion || !isHovering) return;
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
     const offsetX = e.clientX - (rect.left + rect.width / 2);

@@ -18,14 +18,14 @@ export function PageHeader({ onLinkedInCookieClick, onNewExportClick }: PageHead
       
       <div className="flex gap-3">
         <Button 
-          className="gap-2 bg-[#FFDBCC] text-black hover:bg-[#FFDBCC]/90"
+          className="gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
           onClick={onLinkedInCookieClick}
         >
           <Cookie className="h-4 w-4" />
           LinkedIn Cookie
         </Button>
         <Button 
-          className="gap-2 bg-[#FFDBCC] text-black hover:bg-[#FFDBCC]/90"
+          className="gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
           onClick={onNewExportClick}
         >
           <Plus className="h-4 w-4" />

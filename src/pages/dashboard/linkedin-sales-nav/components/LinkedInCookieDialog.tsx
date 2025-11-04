@@ -78,7 +78,7 @@ export function LinkedInCookieDialog({ open, onOpenChange, onMinimize }: LinkedI
 
           <Button
             onClick={handleSaveCookie}
-            className="w-full h-12 text-base gap-2 bg-[#FFDBCC] text-black hover:bg-[#FFDBCC]/90"
+            className="w-full h-12 text-base gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700 border-0"
             size="lg"
           >
             <Save className="h-5 w-5" />

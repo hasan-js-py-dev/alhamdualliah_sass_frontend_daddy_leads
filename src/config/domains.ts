@@ -14,6 +14,15 @@ export const APP_DOMAIN = isDevelopment
   ? '' 
   : 'https://app.daddy-leads.com';
 
+// API domains
+export const MAIN_API_DOMAIN = isDevelopment
+  ? 'http://localhost:5000'
+  : 'https://api.daddy-leads.com';
+
+export const SCRAPER_API_DOMAIN = isDevelopment
+  ? 'http://localhost:3001'
+  : 'https://api.daddy-leads.com';
+
 // Authentication URLs (on app subdomain)
 export const LOGIN_URL = `${APP_DOMAIN}/access?p=login`;
 export const SIGNUP_URL = `${APP_DOMAIN}/access?p=signup`;

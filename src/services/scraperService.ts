@@ -1,7 +1,7 @@
 // LinkedIn Scraper API service
 const SCRAPER_API_BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost:3001/v1/scraper/sales-nav' 
-  : 'https://scraper-api.daddy-leads.com/v1/scraper/sales-nav';
+  ? 'http://localhost:3001/v1/scraper/salesnav' 
+  : 'https://api.daddy-leads.com/v1/scraper/salesnav';
 
 interface ScraperResponse {
   success: boolean;

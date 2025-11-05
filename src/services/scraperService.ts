@@ -1,7 +1,8 @@
 // LinkedIn Scraper API service
-const SCRAPER_API_BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost:3001/v1/scraper/salesnav' 
-  : 'https://api.daddy-leads.com/v1/scraper/salesnav';
+import { SCRAPER_API_DOMAIN } from '@/config/domains';
+
+// Preferred base paths (support both kebab and non-kebab for safety)
+const SCRAPER_PATHS = ['/v1/scraper/salesnav', '/v1/scraper/sales-nav'];
 
 interface ScraperResponse {
   success: boolean;
@@ -19,96 +20,83 @@ class ScraperService {
     };
   }
 
-  async saveCookie(cookie: string): Promise<ScraperResponse> {
-    try {
-      const response = await fetch(`${SCRAPER_API_BASE_URL}/cookie`, {
-        method: 'POST',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ cookie }),
-      });
+  // Build candidate URLs with graceful fallbacks
+  private getCandidateUrls(endpoint: string): string[] {
+    const domains = [SCRAPER_API_DOMAIN, 'http://localhost:3001'];
+    const urls: string[] = [];
 
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Save cookie error:', error);
-      return {
-        success: false,
-        message: 'Network error. Please check your connection.',
-      };
+    for (const domain of domains) {
+      for (const path of SCRAPER_PATHS) {
+        urls.push(`${domain}${path}${endpoint}`);
+      }
     }
+
+    // De-duplicate
+    return Array.from(new Set(urls));
+  }
+
+  // Generic request with retries across candidates
+  private async request(endpoint: string, init: RequestInit): Promise<ScraperResponse> {
+    const candidates = this.getCandidateUrls(endpoint);
+
+    for (const url of candidates) {
+      try {
+        const res = await fetch(url, init);
+        // Try to parse JSON if possible
+        const json = await res
+          .json()
+          .catch(() => ({ success: false, message: `Request failed (${res.status})` }));
+
+        if (res.ok) return json as ScraperResponse;
+        if (res.status === 404) continue; // try next candidate
+        return json as ScraperResponse; // return first non-404 JSON error
+      } catch (err) {
+        // network error: try next candidate
+        continue;
+      }
+    }
+
+    return {
+      success: false,
+      message: 'API endpoint not found',
+    };
+  }
+
+  async saveCookie(cookie: string): Promise<ScraperResponse> {
+    return this.request('/cookie', {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ cookie }),
+    });
   }
 
   async getCookie(): Promise<ScraperResponse> {
-    try {
-      const response = await fetch(`${SCRAPER_API_BASE_URL}/cookie`, {
-        method: 'GET',
-        headers: this.getAuthHeaders(),
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Get cookie error:', error);
-      return {
-        success: false,
-        message: 'Network error. Please check your connection.',
-      };
-    }
+    return this.request('/cookie', {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+    });
   }
 
   async deleteCookie(): Promise<ScraperResponse> {
-    try {
-      const response = await fetch(`${SCRAPER_API_BASE_URL}/cookie`, {
-        method: 'DELETE',
-        headers: this.getAuthHeaders(),
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Delete cookie error:', error);
-      return {
-        success: false,
-        message: 'Network error. Please check your connection.',
-      };
-    }
+    return this.request('/cookie', {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(),
+    });
   }
 
   async startScraper(url: string, listName: string): Promise<ScraperResponse> {
-    try {
-      const response = await fetch(`${SCRAPER_API_BASE_URL}/start`, {
-        method: 'POST',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ url, listName }),
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Start scraper error:', error);
-      return {
-        success: false,
-        message: 'Network error. Please check your connection.',
-      };
-    }
+    return this.request('/start', {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ url, listName }),
+    });
   }
 
   async pauseScraper(): Promise<ScraperResponse> {
-    try {
-      const response = await fetch(`${SCRAPER_API_BASE_URL}/pause`, {
-        method: 'POST',
-        headers: this.getAuthHeaders(),
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Pause scraper error:', error);
-      return {
-        success: false,
-        message: 'Network error. Please check your connection.',
-      };
-    }
+    return this.request('/pause', {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+    });
   }
 }
 

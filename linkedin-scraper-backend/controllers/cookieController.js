@@ -17,7 +17,7 @@ export const saveCookie = async (req, res) => {
     const { cookie } = req.body;
 
     // Get user ID from authenticated user (set by auth middleware)
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?._id || req.user?.userId;
 
     // Validate user ID
     const userValidation = validateUserId(userId);
@@ -63,7 +63,7 @@ export const saveCookie = async (req, res) => {
 export const getCookie = async (req, res) => {
   try {
     // Get user ID from authenticated user
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?._id || req.user?.userId;
 
     // Validate user ID
     const userValidation = validateUserId(userId);
@@ -105,7 +105,7 @@ export const getCookie = async (req, res) => {
 export const deleteCookie = async (req, res) => {
   try {
     // Get user ID from authenticated user
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?._id || req.user?.userId;
 
     // Validate user ID
     const userValidation = validateUserId(userId);

@@ -1,8 +1,7 @@
-// LinkedIn Scraper API service
+// LinkedIn Sales Navigator Scraper API service
 import { SCRAPER_API_DOMAIN } from '@/config/domains';
 
-// Preferred base paths (support both kebab and non-kebab for safety)
-const SCRAPER_PATHS = ['/v1/scraper/salesnav', '/v1/scraper/sales-nav'];
+const BASE_PATH = '/v1/scraper/salesnav';
 
 interface ScraperResponse {
   success: boolean;
@@ -20,46 +19,23 @@ class ScraperService {
     };
   }
 
-  // Build candidate URLs with graceful fallbacks
-  private getCandidateUrls(endpoint: string): string[] {
-    const domains = [SCRAPER_API_DOMAIN, 'http://localhost:3001'];
-    const urls: string[] = [];
-
-    for (const domain of domains) {
-      for (const path of SCRAPER_PATHS) {
-        urls.push(`${domain}${path}${endpoint}`);
-      }
-    }
-
-    // De-duplicate
-    return Array.from(new Set(urls));
-  }
-
-  // Generic request with retries across candidates
   private async request(endpoint: string, init: RequestInit): Promise<ScraperResponse> {
-    const candidates = this.getCandidateUrls(endpoint);
+    const url = `${SCRAPER_API_DOMAIN}${BASE_PATH}${endpoint}`;
+    
+    try {
+      const res = await fetch(url, init);
+      const json = await res.json().catch(() => ({ 
+        success: false, 
+        message: `Request failed (${res.status})` 
+      }));
 
-    for (const url of candidates) {
-      try {
-        const res = await fetch(url, init);
-        // Try to parse JSON if possible
-        const json = await res
-          .json()
-          .catch(() => ({ success: false, message: `Request failed (${res.status})` }));
-
-        if (res.ok) return json as ScraperResponse;
-        if (res.status === 404) continue; // try next candidate
-        return json as ScraperResponse; // return first non-404 JSON error
-      } catch (err) {
-        // network error: try next candidate
-        continue;
-      }
+      return json as ScraperResponse;
+    } catch (err) {
+      return {
+        success: false,
+        message: err instanceof Error ? err.message : 'Network error',
+      };
     }
-
-    return {
-      success: false,
-      message: 'API endpoint not found',
-    };
   }
 
   async saveCookie(cookie: string): Promise<ScraperResponse> {

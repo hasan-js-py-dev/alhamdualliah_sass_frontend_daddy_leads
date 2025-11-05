@@ -26,8 +26,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'linkedin-scraper-backend' });
 });
 
-// Routes
-app.use('/v1/scraper/sales-nav', salesNavRoutes);
+// Routes - Fixed to match frontend URL
+app.use('/v1/scraper/salesnav', salesNavRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

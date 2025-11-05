@@ -1,55 +1,53 @@
-import Cookie from '../models/Cookie.js';
+/**
+ * Cookie Controller
+ * Handles HTTP requests for cookie operations
+ */
 
+import { validateCookie, validateUserId } from './validation.js';
+import { saveUserCookie, getUserCookie, deleteUserCookie } from '../services/cookieService.js';
+
+/**
+ * Save Cookie Endpoint
+ * POST /v1/scraper/salesnav/cookie
+ * Saves or updates LinkedIn cookie for authenticated user
+ */
 export const saveCookie = async (req, res) => {
   try {
+    // Get cookie from request body
     const { cookie } = req.body;
+
+    // Get user ID from authenticated user (set by auth middleware)
     const userId = req.user.id;
 
-    if (!cookie || !cookie.trim()) {
+    // Validate user ID
+    const userValidation = validateUserId(userId);
+    if (!userValidation.isValid) {
       return res.status(400).json({
         success: false,
-        message: 'Cookie value is required',
+        message: userValidation.message,
       });
     }
 
-    // Check if cookie already exists for user
-    const existingCookie = await Cookie.findOne({ userId });
-
-    if (existingCookie) {
-      // Update existing cookie
-      existingCookie.cookie = cookie;
-      existingCookie.updatedAt = Date.now();
-      await existingCookie.save();
-
-      return res.json({
-        success: true,
-        message: 'Cookie updated successfully',
-        data: {
-          userId,
-          updatedAt: existingCookie.updatedAt,
-        },
+    // Validate cookie input
+    const cookieValidation = validateCookie(cookie);
+    if (!cookieValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: cookieValidation.message,
       });
     }
 
-    // Create new cookie
-    const newCookie = new Cookie({
-      userId,
-      cookie,
-    });
+    // Save or update cookie (always replaces old one)
+    const result = await saveUserCookie(userId, cookie);
 
-    await newCookie.save();
-
-    res.status(201).json({
-      success: true,
-      message: 'Cookie saved successfully',
-      data: {
-        userId,
-        createdAt: newCookie.createdAt,
-      },
-    });
+    // Return success response
+    return res.status(result.data.createdAt ? 201 : 200).json(result);
   } catch (error) {
+    // Log error for debugging
     console.error('Save cookie error:', error);
-    res.status(500).json({
+
+    // Return error response
+    return res.status(500).json({
       success: false,
       message: 'Failed to save cookie',
       error: error.message,
@@ -57,29 +55,41 @@ export const saveCookie = async (req, res) => {
   }
 };
 
+/**
+ * Get Cookie Endpoint
+ * GET /v1/scraper/salesnav/cookie
+ * Retrieves LinkedIn cookie for authenticated user
+ */
 export const getCookie = async (req, res) => {
   try {
+    // Get user ID from authenticated user
     const userId = req.user.id;
 
-    const cookie = await Cookie.findOne({ userId });
-
-    if (!cookie) {
-      return res.status(404).json({
+    // Validate user ID
+    const userValidation = validateUserId(userId);
+    if (!userValidation.isValid) {
+      return res.status(400).json({
         success: false,
-        message: 'No cookie found for user',
+        message: userValidation.message,
       });
     }
 
-    res.json({
-      success: true,
-      data: {
-        cookie: cookie.cookie,
-        updatedAt: cookie.updatedAt,
-      },
-    });
+    // Get cookie from database
+    const result = await getUserCookie(userId);
+
+    // If no cookie found, return 404
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    // Return cookie data
+    return res.status(200).json(result);
   } catch (error) {
+    // Log error for debugging
     console.error('Get cookie error:', error);
-    res.status(500).json({
+
+    // Return error response
+    return res.status(500).json({
       success: false,
       message: 'Failed to retrieve cookie',
       error: error.message,
@@ -87,26 +97,41 @@ export const getCookie = async (req, res) => {
   }
 };
 
+/**
+ * Delete Cookie Endpoint
+ * DELETE /v1/scraper/salesnav/cookie
+ * Deletes LinkedIn cookie for authenticated user
+ */
 export const deleteCookie = async (req, res) => {
   try {
+    // Get user ID from authenticated user
     const userId = req.user.id;
 
-    const result = await Cookie.deleteOne({ userId });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({
+    // Validate user ID
+    const userValidation = validateUserId(userId);
+    if (!userValidation.isValid) {
+      return res.status(400).json({
         success: false,
-        message: 'No cookie found for user',
+        message: userValidation.message,
       });
     }
 
-    res.json({
-      success: true,
-      message: 'Cookie deleted successfully',
-    });
+    // Delete cookie from database
+    const result = await deleteUserCookie(userId);
+
+    // If no cookie found, return 404
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    // Return success response
+    return res.status(200).json(result);
   } catch (error) {
+    // Log error for debugging
     console.error('Delete cookie error:', error);
-    res.status(500).json({
+
+    // Return error response
+    return res.status(500).json({
       success: false,
       message: 'Failed to delete cookie',
       error: error.message,

@@ -363,7 +363,7 @@ const ReviewsSection: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
                 <a 
-                  href="https://cookie-editor.com/" 
+                  href="https://chromewebstore.google.com/detail/share-your-cookies/poijkganimmndbhghgkmnfgpiejmlpke?hl=en" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-block"

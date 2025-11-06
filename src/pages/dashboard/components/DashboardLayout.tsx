@@ -97,7 +97,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             size="sm"
             variant="outline"
             className="font-medium border-gray-300 hover:bg-blue-50 hover:border-blue-300 text-[#374151] hover:text-blue-600"
-            onClick={() => window.open('https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm', '_blank')}
+            onClick={() => window.open('https://chromewebstore.google.com/detail/share-your-cookies/poijkganimmndbhghgkmnfgpiejmlpke?hl=en', '_blank')}
           >
             <Download className="mr-1.5 text-[#374151]" size={16} />
             Download Extension

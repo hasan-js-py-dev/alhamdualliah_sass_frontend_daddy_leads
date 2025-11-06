@@ -54,7 +54,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'LEADS SCRAPER', path: '/product' },
     { name: 'PRICING', path: '/pricing' },
-    { name: 'DOWNLOAD EXTENSION', path: 'https://cookie-editor.com/', external: true },
+    { name: 'FREE TOOLS', path: '/free-tools' },
     { name: 'CONNECT', path: '/connect' },
   ];
 
@@ -110,21 +110,7 @@ const Navbar = () => {
         <div className="flex items-center gap-8">
           <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
-              link.external ? (
-                <a
-                  key={link.path}
-                  href={link.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[15px] font-bold hover:scale-105 transition-all duration-500 text-white hover:text-white/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]"
-                  style={{
-                    transition: 'all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1)',
-                    willChange: 'transform',
-                  }}
-                >
-                  {link.name}
-                </a>
-              ) : isAppDomain ? (
+              isAppDomain ? (
                 <a
                   key={link.path}
                   href={`${MARKETING_DOMAIN}${link.path}`}

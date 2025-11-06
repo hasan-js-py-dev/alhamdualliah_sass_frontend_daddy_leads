@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import PricingPage from "./pages/PricingPage";
 import ConnectPage from "./pages/ConnectPage";
+import FreeToolsPage from "./pages/FreeToolsPage";
 import AccessPage from "./pages/AccessPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import DashboardHomePage from "./pages/dashboard/DashboardHomePage";
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/" element={<DomainRedirect type="marketing"><HomePage /></DomainRedirect>} />
               <Route path="/product" element={<DomainRedirect type="marketing"><ProductPage /></DomainRedirect>} />
               <Route path="/pricing" element={<DomainRedirect type="marketing"><PricingPage /></DomainRedirect>} />
+              <Route path="/free-tools" element={<DomainRedirect type="marketing"><FreeToolsPage /></DomainRedirect>} />
               <Route path="/connect" element={<DomainRedirect type="marketing"><ConnectPage /></DomainRedirect>} />
               
               {/* Auth Routes - Only on app subdomain */}

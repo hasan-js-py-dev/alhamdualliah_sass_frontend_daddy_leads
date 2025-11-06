@@ -14,8 +14,6 @@ export const APP_DOMAIN = isDevelopment ? "" : "https://app.daddy-leads.com";
 // API domains
 export const MAIN_API_DOMAIN = isDevelopment ? "http://localhost:5000" : "https://api.daddy-leads.com";
 
-export const SCRAPER_API_DOMAIN = isDevelopment ? "http://localhost:3001" : "https://api.daddy-leads.com";
-
 export const SCRAPER_API_DOMAIN =
   customScraperDomain || (isDevelopment ? "http://localhost:3001" : "https://api.daddy-leads.com");
 

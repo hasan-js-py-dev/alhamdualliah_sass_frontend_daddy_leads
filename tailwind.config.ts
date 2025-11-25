@@ -15,8 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        poppins: ['Poppins', 'sans-serif'],
+        sans: ['ui-sans-serif', '-apple-system', 'system-ui', '"Segoe UI"', 'Helvetica', '"Apple Color Emoji"', 'Arial', 'sans-serif', '"Segoe UI Emoji"', '"Segoe UI Symbol"'],
       },
       colors: {
         border: "hsl(var(--border))",

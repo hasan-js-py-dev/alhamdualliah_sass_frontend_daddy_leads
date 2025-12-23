@@ -38,6 +38,43 @@ All backend/API code lives in the `backend/` folder:
 - `backend/config/` - Environment variable examples
 - `backend/MONGODB_SETUP.md` - Database setup instructions
 
+## GitHub Actions
+
+This repository uses GitHub Actions for continuous integration and deployment automation.
+
+### How to Access GitHub Actions
+
+1. **View Workflow Runs:**
+   - Go to the repository on GitHub: https://github.com/hasan-js-py-dev/alhamdualliah_sass_frontend_Daddy_leads
+   - Click on the "Actions" tab at the top of the repository page
+   - You'll see all workflow runs with their status (success, failed, in progress)
+
+2. **Trigger a Workflow Manually:**
+   - Navigate to the "Actions" tab
+   - Select the workflow you want to run (e.g., "CI")
+   - Click "Run workflow" button on the right
+   - Select the branch and click "Run workflow"
+
+3. **View Workflow Details:**
+   - Click on any workflow run to see detailed logs
+   - Click on individual jobs to see step-by-step execution
+   - Download artifacts if the workflow produces build outputs
+
+### Available Workflows
+
+- **CI (Continuous Integration)**: Runs linting and builds on pull requests and pushes to main/develop branches
+  - Runs on Node.js 18.x and 20.x
+  - Executes `npm run lint` to check code quality
+  - Executes `npm run build` to ensure the project builds successfully
+  - Uploads build artifacts for download
+
+### Workflow Configuration
+
+Workflows are defined in `.github/workflows/` directory. You can:
+- Edit workflow files to customize CI/CD behavior
+- Add new workflows for deployment, testing, or other automation tasks
+- Configure secrets in repository Settings → Secrets and variables → Actions
+
 ## Quick Start
 
 ### Frontend Development
